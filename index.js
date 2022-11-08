@@ -9,8 +9,9 @@ require("dotenv").config();
 const port = process.env.PORT || 5000;
 
 app.get("/", (req, res) => {
-  res.send("now server is running");
+  res.send("now server is running perfectly");
 });
+
 app.listen(port, () => {
   console.log("server is runnin on", port);
 });
