@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 app.use(cors());
 app.use(express.json());
@@ -23,7 +23,8 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    const serviceCollection = client.db("nolok").collection("services");
+    const db = client.db("nolok");
+    const serviceCollection = db.collection("services");
     // only 3 service
     app.get("/services", async (req, res) => {
       const query = {};
@@ -41,6 +42,33 @@ async function run() {
     });
 
     // get specific sevices
+    app.get("/Service_Details/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const details = await serviceCollection.findOne(query);
+      res.send(details);
+    });
+
+    // post review
+    app.post("/review", async (req, res) => {
+      const { body } = req;
+
+      const serviceReview = await db.collection("service_review");
+      const result = await serviceReview.insertOne({
+        ...body,
+      });
+      res.send(result);
+    });
+
+    app.get("/review/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { serviceId: id };
+      const cursor = await db
+        .collection("service_review")
+        .find(query)
+        .toArray();
+      res.json(cursor);
+    });
   } finally {
   }
 }
