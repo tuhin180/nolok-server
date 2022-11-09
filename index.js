@@ -24,13 +24,23 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const serviceCollection = client.db("nolok").collection("services");
-
+    // only 3 service
     app.get("/services", async (req, res) => {
       const query = {};
       const cursor = serviceCollection.find(query).limit(3);
       const services = await cursor.toArray();
       res.send(services);
     });
+
+    // all services
+    app.get("/allServices", async (req, res) => {
+      const query = {};
+      const cursor = serviceCollection.find(query);
+      const services = await cursor.toArray();
+      res.send(services);
+    });
+
+    // get specific sevices
   } finally {
   }
 }
