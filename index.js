@@ -84,7 +84,15 @@ async function run() {
       res.send(MyReviews);
     });
 
-    // all review
+    // delete review
+    app.delete("/review/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await db.collection("service_review").deleteOne(query);
+      res.send(result);
+    });
+
+    // all review according to product
     app.get("/review/:id", async (req, res) => {
       const id = req.params.id;
       const query = { serviceId: id };
