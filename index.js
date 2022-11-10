@@ -60,6 +60,17 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/my_review", async (req, res) => {
+      const myEmail = req.query.email;
+      const myReviews = await db
+        .collection("service_review")
+        .find({
+          email: myEmail,
+        })
+        .toArray();
+      res.json(myReviews);
+    });
+
     app.get("/review/:id", async (req, res) => {
       const id = req.params.id;
       const query = { serviceId: id };
