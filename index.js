@@ -25,6 +25,7 @@ async function run() {
   try {
     const db = client.db("nolok");
     const serviceCollection = db.collection("services");
+
     // only 3 service
     app.get("/services", async (req, res) => {
       const query = {};
@@ -38,6 +39,15 @@ async function run() {
       const query = {};
       const cursor = serviceCollection.find(query);
       const services = await cursor.toArray();
+      res.send(services);
+    });
+
+    // add service
+    app.post("/services", async (req, res) => {
+      const { body } = req;
+      const services = await serviceCollection.insertOne({
+        ...body,
+      });
       res.send(services);
     });
 
@@ -60,23 +70,30 @@ async function run() {
       res.send(result);
     });
 
+    //my review
     app.get("/my_review", async (req, res) => {
+      let query = {};
       const myEmail = req.query.email;
-      const myReviews = await db
-        .collection("service_review")
-        .find({
+      if (myEmail) {
+        query = {
           email: myEmail,
-        })
-        .toArray();
-      res.json(myReviews);
+        };
+      }
+      const cursor = await db.collection("service_review").find(query);
+      const MyReviews = await cursor.toArray();
+      res.send(MyReviews);
     });
 
+    // all review
     app.get("/review/:id", async (req, res) => {
       const id = req.params.id;
       const query = { serviceId: id };
       const cursor = await db
         .collection("service_review")
         .find(query)
+        .sort({
+          _id: -1,
+        })
         .toArray();
       res.json(cursor);
     });
