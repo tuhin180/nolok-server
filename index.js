@@ -84,6 +84,24 @@ async function run() {
       res.send(MyReviews);
     });
 
+    // edit Review
+    app.put("/review/:id", async (req, res) => {
+      const id = req.params.id;
+      const { title, description } = req.body;
+      const query = { _id: ObjectId(id) };
+      const result = await db.collection("service_review").updateOne(
+        query,
+        {
+          $set: {
+            title: title,
+            description: description,
+          },
+        },
+        { upsert: true }
+      );
+      res.send(result);
+    });
+
     // delete review
     app.delete("/review/:id", async (req, res) => {
       const id = req.params.id;
